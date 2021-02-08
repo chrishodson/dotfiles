@@ -1,12 +1,15 @@
 # .profile - Bourne Shell startup script for login shells
 #
 
-export PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin::/usr/local/bin:/usr/local/sbin:/usr/X11R6/bin:
+export PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin::/usr/local/bin:/usr/local/sbin:/usr/X11R6/bin:/opt/puppetlabs/bin
 
 # Get the aliases and functions
-if [ -f ~/.bashrc ]; then
-	. ~/.bashrc
-fi
+for sourcefile in .bashrc .profile-git
+do echo $sourcefile
+	if [ -f ~/${sourcefile} ]; then
+		. ~/.bashrc
+	fi
+done
 
 BLOCKSIZE=K;	export BLOCKSIZE
 EDITOR=vim;   	export EDITOR
@@ -28,6 +31,7 @@ readonly HISTFILE
 export BC_ENV_ARGS=~/.extensions.bc
 # wget http://x-bc.sourceforge.net/extensions.bc
 
+export no_proxy=127.0.0.1,localhost
 unset proxy
 #proxy=http://192.168.1.10:7128/
 #proxy=http://localhost:7128/
@@ -61,9 +65,6 @@ else
      chmod 700 $(dirname ${SSH_ENV}) # Just in case
      start_agent;
 fi
-
-which git  > /dev/null 2>&1 && \
-       	git config --global credential.helper 'cache --timeout=86400'
 
 export TZ=EST5EDT
 umask 027
