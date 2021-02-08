@@ -7,7 +7,7 @@ export PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin::/usr/local/bin:/usr/local/s
 for sourcefile in .bashrc .profile-git
 do echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
-		. ~/.bashrc
+		. ~/${sourcefile}
 	fi
 done
 
