@@ -4,7 +4,7 @@ if [ -f /etc/bashrc ]; then
 fi
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias vi=vim
+which vim > /dev/null && alias vi=vim
 alias rot13='/usr/bin/tr A-Za-z N-ZA-Mn-za-m'
 alias irssi='screen -Rd -S irssi /usr/bin/irssi'
 alias gitcleanup='git branch --merged | grep -v "\*" | grep -v " master" | xargs -n 1 git branch -d'
