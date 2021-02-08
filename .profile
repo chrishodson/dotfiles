@@ -21,7 +21,11 @@ export GNUPLOT_DEFAULT_GDFONT=LiberationSans-Regular
 # set ENV to a file invoked each time sh is started for interactive use.
 export ENV=$HOME/.shrc
 
-export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
+if [ -f ~/.profile-prompt ]; then
+	. .profile-prompt
+else
+	export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
+fi
 
 # HISTIGNORE is a colon-delimited list of patterns which should be excluded.
 export HISTIGNORE=$'[ \t]*:&:[fb]g:exit:ls:ls -l'
