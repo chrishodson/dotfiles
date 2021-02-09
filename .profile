@@ -5,7 +5,8 @@ export PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin::/usr/local/bin:/usr/local/s
 
 # Get the aliases and functions
 for sourcefile in .bashrc .profile-git
-do echo $sourcefile
+do
+	echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
 		. ~/${sourcefile}
 	fi
@@ -22,6 +23,7 @@ export GNUPLOT_DEFAULT_GDFONT=LiberationSans-Regular
 export ENV=$HOME/.shrc
 
 if [ -f ~/.profile-prompt ]; then
+	echo .profile-prompt
 	. .profile-prompt
 else
 	export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
@@ -57,17 +59,21 @@ function start_agent {
      /usr/bin/ssh-add;
 }
 
-if [ -f "${SSH_ENV}" ]; then
-     . "${SSH_ENV}" > /dev/null
-     #ps ${SSH_AGENT_PID} doesn't work under cywgin
-     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-         start_agent;
-     }
+if [ -z "${SSH_AUTH_SOCK}" ]; then
+     if [ -f "${SSH_ENV}" ]; then
+          . "${SSH_ENV}" > /dev/null
+          #ps ${SSH_AGENT_PID} doesn't work under cywgin
+          ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+              start_agent;
+          }
+     else
+          umask 077
+          mkdir -p $(dirname ${SSH_ENV})
+          chmod 700 $(dirname ${SSH_ENV}) # Just in case
+          start_agent;
+     fi
 else
-     umask 077
-     mkdir -p $(dirname ${SSH_ENV})
-     chmod 700 $(dirname ${SSH_ENV}) # Just in case
-     start_agent;
+     echo "SSH agent running via previous host"
 fi
 
 export TZ=EST5EDT
