@@ -1,1 +1,5 @@
 .cfg
+.vim/backup
+.vim/undo
+.vim/swap
+.vim/viminfo
