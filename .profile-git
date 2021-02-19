@@ -1,8 +1,7 @@
-which git > /dev/null 2>&1 || exit
-
-git config --global credential.helper 'cache --timeout=86400'
-git config --global push.default simple
-alias gitcleanup='git branch --merged | grep -v "\*" | grep -v " master" \
-       | xargs -n 1 git branch -d'
-alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
-
+if (which git > /dev/null 2>&1); then
+  git config --global credential.helper 'cache --timeout=86400'
+  git config --global push.default simple
+  alias gitcleanup='git branch --merged | grep -v "\*" | grep -v " master" \
+    | xargs -n 1 git branch -d'
+  alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
+fi
