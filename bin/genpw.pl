@@ -21,7 +21,7 @@ sub generatePassword {
   $previous = ' ';
   $newletter = ' ';
   while (length($password) < $length) {
-    until ($newletter != $previous) {
+    until ($newletter ne $previous) {
       $newletter = substr($possible, (int(rand(length($possible)))), 1);
     }
     $password .= $newletter;
