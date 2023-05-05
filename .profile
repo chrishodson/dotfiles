@@ -9,7 +9,7 @@ PATH=${PATH}:/home/nerf/.local/bin
 export PATH
 
 # Get the aliases and functions
-for sourcefile in .bashrc .profile-git
+for sourcefile in .bashrc .profile-git .profile-ssh
 do
 	echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
@@ -51,47 +51,6 @@ do
 	eval ${setting}="$proxy"
 	export ${setting}
 done
-
-mkdir -p "$HOME/.ssh/environment/"
-export SSH_ENV="$HOME/.ssh/environment/env-${HOSTNAME}"
-
-magic() { # returns unexpanded tilde express on invalid user
-    local _safe_path; printf -v _safe_path "%q" "$1"
-    eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
-    readlink /tmp/realpath.$$
-    rm -f /tmp/realpath.$$
-}
-
-function start_agent {
-     echo -n "Initialising new SSH agent... "
-     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}" &&
-       echo -n succeeded
-     echo ""
-     chmod 600 "${SSH_ENV}"
-     . "${SSH_ENV}" > /dev/null
-     for id_file in $(awk '/^[     ]*IdentityFile/ {print $2}' ~/.ssh/config | sort -u)
-     do
-	 /usr/bin/ssh-add $(magic $id_file)
-     done
-     echo "Done adding keys" ;
-}
-
-if [ -z "${SSH_AUTH_SOCK}" ]; then
-     if [ -f "${SSH_ENV}" ]; then
-          . "${SSH_ENV}" > /dev/null
-          #ps ${SSH_AGENT_PID} doesn't work under cywgin
-          ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-              start_agent;
-          }
-     else
-          umask 077
-          mkdir -p $(dirname ${SSH_ENV})
-          chmod 700 $(dirname ${SSH_ENV}) # Just in case
-          start_agent;
-     fi
-else
-     echo "SSH agent running via previous host"
-fi
 
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
