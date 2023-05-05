@@ -45,7 +45,7 @@ if [[ ${USER} == "root" ]]; then
     SU=${Red}           # User is root.
     PROMPT='#'
 elif [[ ${USER} != $(logname) ]]; then
-    SU=${BYellow}          # User is not login user.
+    SU=${BBlue}          # User is not login user.
     PROMPT='\$'
 else
     SU=${BGreen}         # User is normal (well ... most of us are).

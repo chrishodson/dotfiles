@@ -1,7 +1,12 @@
 # .profile - Bourne Shell startup script for login shells
 #
 
-export PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin::/usr/local/bin:/usr/local/sbin:/usr/X11R6/bin:/opt/puppetlabs/bin
+PATH=$HOME/bin
+PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin
+PATH=${PATH}:/usr/local/bin:/usr/local/sbin
+PATH=${PATH}:/usr/X11R6/bin:/opt/puppetlabs/bin
+PATH=${PATH}:/home/nerf/.local/bin
+export PATH
 
 # Get the aliases and functions
 for sourcefile in .bashrc .profile-git
@@ -47,7 +52,15 @@ do
 	export ${setting}
 done
 
-export SSH_ENV="$HOME/.ssh/environment-${HOSTNAME}"
+mkdir -p "$HOME/.ssh/environment/"
+export SSH_ENV="$HOME/.ssh/environment/env-${HOSTNAME}"
+
+magic() { # returns unexpanded tilde express on invalid user
+    local _safe_path; printf -v _safe_path "%q" "$1"
+    eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
+    readlink /tmp/realpath.$$
+    rm -f /tmp/realpath.$$
+}
 
 function start_agent {
      echo -n "Initialising new SSH agent... "
@@ -56,7 +69,11 @@ function start_agent {
      echo ""
      chmod 600 "${SSH_ENV}"
      . "${SSH_ENV}" > /dev/null
-     /usr/bin/ssh-add;
+     for id_file in $(awk '/^[     ]*IdentityFile/ {print $2}' ~/.ssh/config | sort -u)
+     do
+	 /usr/bin/ssh-add $(magic $id_file)
+     done
+     echo "Done adding keys" ;
 }
 
 if [ -z "${SSH_AUTH_SOCK}" ]; then
@@ -76,6 +93,9 @@ else
      echo "SSH agent running via previous host"
 fi
 
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
 export TZ=EST5EDT
 umask 027
 set -o vi
+export AWS_DEFAULT_PROFILE=amazon
