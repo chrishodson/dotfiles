@@ -30,7 +30,7 @@ done
 cleansePath() {
     local newPath=""
     for dir in $(echo $PATH | tr ":" "\n"); do
-	dir=$(echo $dir | sed -e 's!/$!!')
+	dir="$(realpath "$dir")"
 	if ( [ -d "$dir" ] && [[ ":$newPath:" != *":$dir:"* ]] ); then
 	    newPath="${newPath:+"$newPath:"}$dir"
 	fi
@@ -43,10 +43,21 @@ cleansePath() {
     fi
 }
 
+# convert html strings to plain text
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
-# returns expanded directories
+# returns expanded directories (i.e. with symlinks and tilde resolved)
 realpath() {
     local _safe_path; printf -v _safe_path "%q" "$1"
-    eval "cd ${_safe_path%/*} && pwd -P/${_safe_path##*/}"
+    eval "cd ${_safe_path} && pwd -P"
+}
+
+# Usage: proxy <proxy>
+# Sets the http_proxy, https_proxy, and ftp_proxy environment variables
+proxy() {
+    local proxy="$1"
+    for setting in http_proxy https_proxy ftp_proxy ; do
+	export $setting="$proxy"
+	export ${setting^^}="$proxy" # Same as above, but for uppercase
+    done
 }

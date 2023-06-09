@@ -1,15 +1,17 @@
 # .profile - Bourne Shell startup script for login shells
 #
 
-PATH=$HOME/bin
-PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin
-PATH=${PATH}:/usr/local/bin:/usr/local/sbin
-PATH=${PATH}:/usr/X11R6/bin:/opt/puppetlabs/bin
-PATH=${PATH}:/home/nerf/.local/bin
-export PATH
+PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+
+umask 027
+
+#export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
 
 # Get the aliases and functions
-for sourcefile in .profile-functions .bashrc .profile-git .profile-ssh
+for sourcefile in \
+    .profile-functions .bashrc \
+    .profile-git .profile-prompt \
+    .profile-ssh
 do
 	echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
@@ -17,42 +19,21 @@ do
 	fi
 done
 
-BLOCKSIZE=K;	export BLOCKSIZE
-EDITOR=vim;   	export EDITOR
-PAGER=more;  	export PAGER
+prependPath $HOME/bin
+appendPath /usr/local/bin /usr/local/sbin
+appendPath /usr/X11R6/bin /opt/puppetlabs/bin
+appendPath ~/.local/bin
 
-export GDFONTPATH=/usr/share/fonts/liberation
-export GNUPLOT_DEFAULT_GDFONT=LiberationSans-Regular
-
-# set ENV to a file invoked each time sh is started for interactive use.
-export ENV=$HOME/.shrc
-
-if [ -f ~/.profile-prompt ]; then
-	echo .profile-prompt
-	. .profile-prompt
-else
-	export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
-fi
-
-# HISTIGNORE is a colon-delimited list of patterns which should be excluded.
-export HISTIGNORE=$'[ \t]*:&:[fb]g:exit:ls:ls -l'
-export HISTCONTROL=ignoreboth:erasedups
-readonly HISTCONTROL
-readonly HISTFILE
 export BC_ENV_ARGS=~/.extensions.bc
 # wget http://x-bc.sourceforge.net/extensions.bc
 
-export no_proxy=127.0.0.1,localhost
-unset proxy
-#proxy=http://192.168.1.10:7128/
-#proxy=http://localhost:7128/
-for setting in http_proxy HTTP_PROXY https_proxy HTTPS_PROXY
-do
-	eval ${setting}="$proxy"
-	export ${setting}
-done
+proxy http://localhost:7128/
 
-export TZ=EST5EDT
-umask 027
 set -o vi
-export AWS_DEFAULT_PROFILE=amazon
+
+echo "cleansePath"
+cleansePath
+export PATH
+
+readonly HISTCONTROL
+readonly HISTFILE
