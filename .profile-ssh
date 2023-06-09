@@ -8,33 +8,38 @@ magic() { # returns unexpanded tilde express on invalid user
     rm -f /tmp/realpath.$$
 }
 
+function add_keys {
+    for id_file in $(awk '/^[ 	]*IdentityFile/ {print $2}' ~/.ssh/config \
+	  | sort -u)
+    do
+        /usr/bin/ssh-add $(magic $id_file)
+    done
+    echo "Done adding keys" ;
+}
+
 function start_agent {
-     echo -n "Initialising new SSH agent... "
-     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}" &&
-       echo -n succeeded
-     echo ""
-     chmod 600 "${SSH_ENV}"
-     . "${SSH_ENV}" > /dev/null
-     for id_file in $(awk '/^[     ]*IdentityFile/ {print $2}' ~/.ssh/config | sort -u)
-     do
-         /usr/bin/ssh-add $(magic $id_file)
-     done
-     echo "Done adding keys" ;
+    echo -n "Initialising new SSH agent... "
+    /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}" &&
+        echo -n succeeded
+    echo ""
+    chmod 600 "${SSH_ENV}"
+    . "${SSH_ENV}" > /dev/null
 }
 
 if [ -z "${SSH_AUTH_SOCK}" ]; then
-     if [ -f "${SSH_ENV}" ]; then
-          . "${SSH_ENV}" > /dev/null
-          #ps ${SSH_AGENT_PID} doesn't work under cywgin
-          ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-              start_agent;
-          }
-     else
-          umask 077
-          mkdir -p $(dirname ${SSH_ENV})
-          chmod 700 $(dirname ${SSH_ENV}) # Just in case
-          start_agent;
-     fi
+    if [ -f "${SSH_ENV}" ]; then
+        . "${SSH_ENV}" > /dev/null
+        #ps ${SSH_AGENT_PID} doesn't work under cywgin
+        ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+            start_agent;
+        }
+    else
+        umask 077
+        mkdir -p $(dirname ${SSH_ENV})
+        chmod 700 $(dirname ${SSH_ENV}) # Just in case
+        start_agent;
+    fi
+    add_keys;
 else
-     echo "SSH agent running via previous host"
+    echo "SSH agent running via previous host"
 fi
