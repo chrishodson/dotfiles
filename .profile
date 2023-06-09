@@ -24,10 +24,11 @@ appendPath /usr/local/bin /usr/local/sbin
 appendPath /usr/X11R6/bin /opt/puppetlabs/bin
 appendPath ~/.local/bin
 
-export BC_ENV_ARGS=~/.extensions.bc
-# wget http://x-bc.sourceforge.net/extensions.bc
+proxy # http://localhost:7128/
 
-proxy http://localhost:7128/
+export BC_ENV_ARGS=~/.extensions.bc
+[[ ! -f $BC_ENV_ARGS ]] && \
+    curl -o $BC_ENV_ARGS https://x-bc.sourceforge.net/extensions.bc
 
 set -o vi
 
