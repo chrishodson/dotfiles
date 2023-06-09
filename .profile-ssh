@@ -1,18 +1,11 @@
 mkdir -p "$HOME/.ssh/environment/"
 export SSH_ENV="$HOME/.ssh/environment/env-${HOSTNAME}"
 
-magic() { # returns unexpanded tilde express on invalid user
-    local _safe_path; printf -v _safe_path "%q" "$1"
-    eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
-    readlink /tmp/realpath.$$
-    rm -f /tmp/realpath.$$
-}
-
 function add_keys {
     for id_file in $(awk '/^[ 	]*IdentityFile/ {print $2}' ~/.ssh/config \
 	  | sort -u)
     do
-        /usr/bin/ssh-add $(magic $id_file)
+        /usr/bin/ssh-add $(realpath $id_file)
     done
     echo "Done adding keys" ;
 }

@@ -9,7 +9,7 @@ PATH=${PATH}:/home/nerf/.local/bin
 export PATH
 
 # Get the aliases and functions
-for sourcefile in .bashrc .profile-git .profile-ssh
+for sourcefile in .profile-functions .bashrc .profile-git .profile-ssh
 do
 	echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
@@ -51,8 +51,6 @@ do
 	eval ${setting}="$proxy"
 	export ${setting}
 done
-
-function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 export TZ=EST5EDT
 umask 027

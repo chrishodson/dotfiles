@@ -1,0 +1,52 @@
+# Bash functions for use in .profile and beyond
+# Source this file in your .profile or .bashrc to use these functions
+
+
+# Usage: prependPath <path>
+# Adds <path> to the PATH environment variable if it exists
+prependPath() {
+while [ $# -gt 0 ]; do
+    if [ -d "$1" ]; then
+	PATH="$1:$PATH"
+    fi
+    shift
+done
+}
+
+# Usage: appendPath <path>
+# Adds <path> to the PATH environment variable if it exists
+appendPath() {
+while [ $# -gt 0 ]; do
+    if [ -d "$1" ]; then
+	PATH="$PATH:$1"
+    fi
+    shift
+done
+}
+
+# Usage: cleansePath
+# Removes duplicate entries from the PATH environment variable.
+# Returns 0 if the PATH was changed, 1 if it was not.
+cleansePath() {
+    local newPath=""
+    for dir in $(echo $PATH | tr ":" "\n"); do
+	dir=$(echo $dir | sed -e 's!/$!!')
+	if ( [ -d "$dir" ] && [[ ":$newPath:" != *":$dir:"* ]] ); then
+	    newPath="${newPath:+"$newPath:"}$dir"
+	fi
+    done
+    if [ "$newPath" != "$PATH" ]; then
+	PATH="$newPath"
+	return 0
+    else
+	return 1
+    fi
+}
+
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
+# returns expanded directories
+realpath() {
+    local _safe_path; printf -v _safe_path "%q" "$1"
+    eval "cd ${_safe_path%/*} && pwd -P/${_safe_path##*/}"
+}
