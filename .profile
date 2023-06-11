@@ -1,7 +1,7 @@
 # .profile - Bourne Shell startup script for login shells
 #
 
-PATH=$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+PATH=/usr/sbin:/usr/bin
 
 umask 027
 
@@ -32,7 +32,6 @@ export BC_ENV_ARGS=~/.extensions.bc
 
 set -o vi
 
-echo "cleansePath"
 cleansePath
 export PATH
 
