@@ -30,7 +30,8 @@ export ENV=$HOME/.shrc
 
 # HISTIGNORE is a colon-delimited list of patterns which should be excluded.
 export HISTIGNORE=$'[ \t]*:&:[fb]g:exit:ls:ls -l'
-export HISTCONTROL=ignoreboth:erasedups
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoreboth
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups
 
 export no_proxy=127.0.0.1,localhost
 
