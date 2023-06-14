@@ -49,7 +49,9 @@ function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 # returns expanded directories (i.e. with symlinks and tilde resolved)
 realpath() {
     local _safe_path; printf -v _safe_path "%q" "$1"
-    eval "cd ${_safe_path} && pwd -P"
+    eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
+    readlink /tmp/realpath.$$
+    rm -f /tmp/realpath.$$
 }
 
 # Usage: proxy <proxy>
