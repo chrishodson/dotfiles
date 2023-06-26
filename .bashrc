@@ -18,6 +18,9 @@ which vim       > /dev/null 2>&1 && alias vi=vim
 which colordiff > /dev/null 2>&1 && alias diff=colordiff
 which more      > /dev/null 2>&1 || alias more=less
 
+# If brew exists (MacOS) then let it set up its environment
+which /opt/homebrew/bin/brew > /dev/null 2>&1 && eval "$(/opt/homebrew/bin/brew shellenv)"
+
 BLOCKSIZE=K;    export BLOCKSIZE
 EDITOR=vim;     export EDITOR
 PAGER=more;     export PAGER
