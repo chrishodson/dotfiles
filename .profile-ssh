@@ -1,10 +1,18 @@
 export SSH_ENV="$HOME/.ssh/environment/env-${HOSTNAME}"
 
 function add_keys {
-    for id_file in $(awk '/^[ 	]*IdentityFile/ {print $2}' ~/.ssh/config \
-	  | sort -u)
+    for id_file in \
+      $(awk '/^[[:space:]]*IdentityFile/ {print $2}' ~/.ssh/config \
+      | sort -u)
     do
-        /usr/bin/ssh-add $(realpath $id_file)
+        if /usr/bin/ssh-add -l \
+            | grep -q "$(ssh-keygen -lf $(realpath $id_file) \
+            | awk '{print $2}')";
+        then
+            echo "Identidty skipped: $id_file (already present)"
+        else
+            /usr/bin/ssh-add $(realpath $id_file)
+        fi
     done
     echo "Done adding keys" ;
 }
