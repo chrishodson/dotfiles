@@ -30,10 +30,12 @@ export BC_ENV_ARGS=~/.extensions.bc
 [[ ! -f $BC_ENV_ARGS ]] && \
     curl -o $BC_ENV_ARGS https://x-bc.sourceforge.net/extensions.bc
 
-set -o vi
-
 cleansePath
 export PATH
 
 readonly HISTCONTROL
 readonly HISTFILE
+
+set -o vi
+export TZ=EST5EDT
+export AWS_DEFAULT_PROFILE=default
