@@ -60,6 +60,7 @@ proxy() {
     local proxy="$1"
     for setting in http_proxy https_proxy ftp_proxy ; do
 	export $setting="$proxy"
-	export ${setting^^}="$proxy" # Same as above, but for uppercase
+	[ ${BASH_VERSINFO[0]} -ge 4 ] &&
+	    export ${setting^^}="$proxy" # Same as above, but for uppercase
     done
 }

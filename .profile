@@ -1,7 +1,7 @@
 # .profile - Bourne Shell startup script for login shells
 #
 
-PATH=/usr/sbin:/usr/bin
+#PATH=/usr/sbin:/usr/bin
 
 umask 027
 
