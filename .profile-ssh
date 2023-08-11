@@ -41,7 +41,7 @@ if [ -z "${SSH_AUTH_SOCK}" ]; then
         chmod 700 $(dirname ${SSH_ENV}) # Just in case
         start_agent;
     fi
-    add_keys;
 else
     echo "SSH agent running via previous host"
 fi
+add_keys
