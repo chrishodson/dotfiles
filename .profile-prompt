@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ -z "$BASH_VERSION" ] || [ -n "$WORKSPACES" ]; then
+    exit 0
+fi
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
