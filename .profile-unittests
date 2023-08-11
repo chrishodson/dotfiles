@@ -1,0 +1,60 @@
+#!/bin/bash
+
+. .profile-functions
+
+# Test helper function to assert equality
+assert_eq() {
+    if [[ "$1" != "$2" ]]; then
+        printf "FAIL: expected '%s', got '%s'\n" "$2" "$1"
+        exit 1
+    fi
+}
+
+# Test URL decoding with spaces and percent-encoded characters
+assert_eq "$(urldecode "hello%20world")" "hello world"
+assert_eq "$(urldecode "foo%2Bbar")" "foo+bar"
+assert_eq "$(urldecode "baz%3Fqux%3D123")" "baz?qux=123"
+
+# Test URL decoding with special characters
+assert_eq "$(urldecode "%3C")" "<"
+assert_eq "$(urldecode "%3E")" ">"
+assert_eq "$(urldecode "%22")" "\""
+assert_eq "$(urldecode "%27")" "'"
+assert_eq "$(urldecode "%5C")" "\\"
+assert_eq "$(urldecode "%7C")" "|"
+assert_eq "$(urldecode "%24")" "\$"
+assert_eq "$(urldecode "%60")" "\`"
+assert_eq "$(urldecode "%2F")" "/"
+assert_eq "$(urldecode "%3F")" "?"
+assert_eq "$(urldecode "%2A")" "*"
+assert_eq "$(urldecode "%26")" "&"
+assert_eq "$(urldecode "%25")" "%"
+assert_eq "$(urldecode "%23")" "#"
+assert_eq "$(urldecode "%40")" "@"
+assert_eq "$(urldecode "%21")" "!"
+assert_eq "$(urldecode "%5E")" "^"
+assert_eq "$(urldecode "%28")" "("
+assert_eq "$(urldecode "%29")" ")"
+assert_eq "$(urldecode "%7B")" "{"
+assert_eq "$(urldecode "%7D")" "}"
+assert_eq "$(urldecode "%5B")" "["
+assert_eq "$(urldecode "%5D")" "]"
+assert_eq "$(urldecode "%3D")" "="
+assert_eq "$(urldecode "%2B")" "+"
+assert_eq "$(urldecode "%2D")" "-"
+assert_eq "$(urldecode "%5C")" "\\"
+
+# Test URL decoding with special characters
+assert_eq "$(urldecode "%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\"
+
+# Test URL decoding with empty string
+assert_eq "$(urldecode "")" ""
+
+# Test URL decoding with non-ASCII characters
+assert_eq "$(urldecode "%C3%A9%C3%A0%C3%A7")" "éàç"
+
+
+# Test URL decoding with special characters in variable name
+foo_bar="%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C"
+assert_eq "$(urldecode "$foo_bar")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\"
+

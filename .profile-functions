@@ -45,7 +45,11 @@ cleansePath() {
 }
 
 # convert html strings to plain text
-function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+urldecode() {
+    local var="${1//+/ }"
+    printf -v _var '%b' "${var//%/\\x}"
+    echo "$_var"
+}
 
 # returns expanded directories (i.e. with symlinks and tilde resolved)
 if ! command -v realpath >/dev/null 2>&1; then
