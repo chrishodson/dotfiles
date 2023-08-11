@@ -28,18 +28,19 @@ done
 # Removes duplicate entries from the PATH environment variable.
 # Returns 0 if the PATH was changed, 1 if it was not.
 cleansePath() {
-    local newPath=""
-    for dir in $(echo $PATH | tr ":" "\n"); do
-	dir="$(realpath "$dir")"
-	if ( [ -d "$dir" ] && [[ ":$newPath:" != *":$dir:"* ]] ); then
-	    newPath="${newPath:+"$newPath:"}$dir"
-	fi
+    local -a newPath
+    IFS=: read -ra dirs <<< "$PATH"
+    for dir in "${dirs[@]}"; do
+        dir="$(realpath "$dir")"
+        if ! [[ ":${newPath[*]}:" == *":$dir:"* ]] && [ -d "$dir" ]; then
+            newPath+=("$dir")
+        fi
     done
-    if [ "$newPath" != "$PATH" ]; then
-	PATH="$newPath"
-	return 0
+    if [ "${newPath[*]}" != "$PATH" ]; then
+        PATH="${newPath[*]}"
+        return 0
     else
-	return 1
+        return 1
     fi
 }
 
@@ -47,12 +48,14 @@ cleansePath() {
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 # returns expanded directories (i.e. with symlinks and tilde resolved)
-realpath() {
-    local _safe_path; printf -v _safe_path "%q" "$1"
-    eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
-    readlink /tmp/realpath.$$
-    rm -f /tmp/realpath.$$
-}
+if ! command -v realpath >/dev/null 2>&1; then
+    realpath() {
+        local _safe_path; printf -v _safe_path "%q" "$1"
+        eval "ln -sf ${_safe_path#\\} /tmp/realpath.$$"
+        readlink /tmp/realpath.$$
+        rm -f /tmp/realpath.$$
+    }
+fi
 
 # Usage: proxy <proxy>
 # Sets the http_proxy, https_proxy, and ftp_proxy environment variables

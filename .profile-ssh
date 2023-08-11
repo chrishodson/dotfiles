@@ -9,12 +9,12 @@ function add_keys {
             | grep -q "$(ssh-keygen -lf $(realpath $id_file) \
             | awk '{print $2}')";
         then
-            echo "Identidty skipped: $id_file (already present)"
+            printf "Identity skipped: %s (already present)\n" "$id_file"
         else
-            /usr/bin/ssh-add $(realpath $id_file)
+            /usr/bin/ssh-add -qK $(realpath $id_file)
         fi
     done
-    echo "Done adding keys" ;
+    echo "Done adding keys"
 }
 
 function start_agent {
