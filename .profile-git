@@ -3,5 +3,7 @@ if (which git > /dev/null 2>&1); then
   git config --global push.default simple
   alias gitcleanup='git branch --merged | grep -v "\*" | grep -v " master" \
     | xargs -n 1 git branch -d'
+  alias gitlog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s \
+    %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
   alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 fi
