@@ -1,11 +1,7 @@
-# .profile - Bourne Shell startup script for login shells
+# .profile - Shell startup script for login shells
 #
 
-#PATH=/usr/sbin:/usr/bin
-
 umask 027
-
-#export PS1="\[\e]2;\u@\H \w\a\e[32;1m\]\#\$ \[\e[0m\]"
 
 # Get the aliases and functions
 for sourcefile in \

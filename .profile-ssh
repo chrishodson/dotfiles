@@ -29,10 +29,10 @@ function start_agent {
 if [ -z "${SSH_AUTH_SOCK}" ]; then
     if [ -f "${SSH_ENV}" ]; then
         # Clean up env files that have not been used in the last 60 days
-        find $(dirname ${SSH_ENV}) -atime +60 -type f -print -delete
+        find "$(dirname ${SSH_ENV})" -atime +60 -type f -print -delete
         . "${SSH_ENV}" > /dev/null
         #ps ${SSH_AGENT_PID} doesn't work under cywgin
-        ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+        ps -ef | grep ${SSH_AGENT_PID} | grep -q ssh-agent$ || {
             start_agent;
         }
     else
