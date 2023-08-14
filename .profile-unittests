@@ -72,3 +72,32 @@ assert_eq "$(untilde "~/foo bar")" "${HOME}/foo bar"
 assert_eq "$(untilde "~/foo bar/baz qux")" "${HOME}/foo bar/baz qux"
 
 # "untilde tests passed"
+
+# Test helper function to assert equality
+assert_eq() {
+    if [[ "$1" != "$2" ]]; then
+        printf "FAIL: expected '%s', got '%s'\n" "$2" "$1"
+        PATH="$OLD_PATH"
+        exit 1
+    fi
+}
+
+# Test prependPath with empty path
+OLD_PATH="$PATH"
+prependPath ""
+assert_eq "$PATH" "$OLD_PATH"
+
+# Test prependPath with non-existent path
+prependPath "/foo/bar"
+assert_eq "$PATH" "$OLD_PATH"
+
+# Test prependPath with existing path
+prependPath "/usr/bin"
+assert_eq "$PATH" "/usr/bin:$OLD_PATH"
+
+# Test prependPath with multiple paths
+prependPath "/usr/local/bin" "/usr/local/sbin"
+assert_eq "$PATH" "/usr/local/bin:/usr/local/sbin:/usr/bin:$OLD_PATH"
+
+PATH="$OLD_PATH"
+# prependPath tests passed

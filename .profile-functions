@@ -5,12 +5,15 @@
 # Usage: prependPath <path>
 # Adds <path> to the PATH environment variable if it exists
 prependPath() {
-while [ $# -gt 0 ]; do
-    if [ -d "$1" ]; then
-	PATH="$1:$PATH"
+    local newPath=""
+    for dir in "$@"; do
+        if [ -d "$dir" ]; then
+            newPath="${newPath:+$newPath:}$dir"
+        fi
+    done
+    if [ -n "$newPath" ]; then
+        PATH="$newPath:$PATH"
     fi
-    shift
-done
 }
 
 # Usage: appendPath <path>
