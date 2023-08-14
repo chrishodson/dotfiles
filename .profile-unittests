@@ -101,3 +101,58 @@ assert_eq "$PATH" "/usr/local/bin:/usr/local/sbin:/usr/bin:$OLD_PATH"
 
 PATH="$OLD_PATH"
 # prependPath tests passed
+
+OLD_PATH="$PATH"
+# Test appendPath with empty path
+appendPath ""
+assert_eq "$PATH" "$OLD_PATH"
+
+# Test appendPath with non-existent path
+appendPath "/foo/bar"
+assert_eq "$PATH" "$OLD_PATH"
+
+# Test appendPath with existing path
+appendPath "/usr/bin"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin"
+
+# Test appendPath with multiple paths
+appendPath "/usr/local/bin" "/usr/local/sbin"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin"
+
+# Test appendPath with spaces in directory name
+newDir=$(mktemp -p /tmp -d "foo XXX")
+appendPath "$newDir"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin:$newDir"
+rmdir "$newDir"
+
+PATH="$OLD_PATH"
+# appendPath tests passed
+
+OLD_PATH="$PATH"
+# Test cleansePath with no duplicate paths
+PATH=/usr/bin:/usr/local/bin:/usr/local/sbin
+cleansePath
+assert_eq "$PATH" /usr/bin:/usr/local/bin:/usr/local/sbin
+PATH="$OLD_PATH"
+
+cleansePath
+OLD_PATH="$PATH"
+
+# Test cleansePath with duplicate paths
+PATH="$OLD_PATH:$OLD_PATH"
+cleansePath
+assert_eq "$PATH" "$OLD_PATH"
+
+# Test cleansePath with duplicate paths and spaces
+newDir=$(mktemp -p /tmp -d "foo XXX")
+PATH="$OLD_PATH:$newDir:$newDir"
+cleansePath
+assert_eq "$PATH" "$OLD_PATH:$newDir"
+
+# Test cleansePath with non-existent paths
+rmdir "$newDir"
+cleansePath
+assert_eq "$PATH" "$OLD_PATH"
+
+PATH="$OLD_PATH"
+# cleansePath tests passed
