@@ -32,10 +32,11 @@ done
 # Returns 0 if the PATH was changed, 1 if it was not.
 cleansePath() {
     local -a newPath
-    IFS=: read -ra dirs <<< "$PATH"
+    IFS=: 
+    read -ra dirs <<< "$PATH"
     for dir in "${dirs[@]}"; do
         dir="$(untilde "$dir")"
-        if ! [[ ":${newPath[*]}:" == *":$dir:"* ]] && [ -d "$dir" ]; then
+        if [ -d "$dir" ] && ! [[ "${newPath[*]}" =~ (^|:)$dir($|:) ]]; then
             newPath+=("$dir")
         fi
     done
