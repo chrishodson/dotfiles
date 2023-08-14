@@ -53,8 +53,22 @@ assert_eq "$(urldecode "")" ""
 # Test URL decoding with non-ASCII characters
 assert_eq "$(urldecode "%C3%A9%C3%A0%C3%A7")" "éàç"
 
-
 # Test URL decoding with special characters in variable name
 foo_bar="%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C"
 assert_eq "$(urldecode "$foo_bar")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\"
 
+# "urldecode tests passed"
+
+# Test untilde with absolute path
+assert_eq "$(untilde "/etc/passwd")" "/etc/passwd"
+
+# Test untilde with tilde
+assert_eq "$(untilde "~/test.txt")" "${HOME}/test.txt"
+
+# Test untilde with spaces
+assert_eq "$(untilde "~/foo bar")" "${HOME}/foo bar"
+
+# Test untilde with special characters
+assert_eq "$(untilde "~/foo bar/baz qux")" "${HOME}/foo bar/baz qux"
+
+# "untilde tests passed"

@@ -6,12 +6,12 @@ function add_keys {
       | sort -u)
     do
         if /usr/bin/ssh-add -l \
-            | grep -q "$(ssh-keygen -lf $(realpath $id_file) \
+            | grep -q "$(ssh-keygen -lf $(untilde $id_file) \
             | awk '{print $2}')";
         then
             printf "Identity skipped: %s (already present)\n" "$id_file"
         else
-            /usr/bin/ssh-add -qK $(realpath $id_file)
+            /usr/bin/ssh-add -qK $(untilde $id_file)
         fi
     done
     echo "Done adding keys"
