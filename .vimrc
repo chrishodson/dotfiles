@@ -139,9 +139,6 @@ endif
 :set nowritebackup
 :endif
 
-"call pathogen#infect() 
-execute pathogen#infect()
-
 " autocmds to automatically enter hex mode and handle file writes properly
 if has("autocmd")
   " vim -b : edit binary using xxd-format!
