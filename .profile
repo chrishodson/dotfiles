@@ -7,7 +7,9 @@ umask 027
 for sourcefile in \
     .profile-functions .bashrc \
     .profile-git .profile-prompt \
-    .profile-ssh
+    .profile-ssh \
+    .profile-aliases \
+    .profile-cygwin
 do
 	echo $sourcefile
 	if [ -f ~/${sourcefile} ]; then
@@ -19,7 +21,6 @@ prependPath $HOME/bin
 appendPath /usr/local/bin /usr/local/sbin
 appendPath /usr/X11R6/bin /opt/puppetlabs/bin
 appendPath ~/.local/bin
-. .profile-cygwin
 
 proxy # http://localhost:7128/
 
