@@ -31,8 +31,9 @@ export BC_ENV_ARGS=~/.extensions.bc
 cleansePath
 export PATH
 
-readonly HISTCONTROL
-readonly HISTFILE
+# Try to unse them in a subshell.  If it works, make them read-only
+(unset HISTCONTROL 2>/dev/null) && readonly HISTCONTROL
+(unset HISTFILE    2>/dev/null) && readonly HISTFILE
 
 set -o vi
 export TZ=EST5EDT
