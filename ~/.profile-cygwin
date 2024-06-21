@@ -1,7 +1,0 @@
-if [[ "$(uname -s)" == *CYGWIN* ]]; then
-    # settings typically used for cygwin
-    appendPath /cygdrive/c/Program\ Files/Docker/Docker/resources/bin/
-    appendPath /cygdrive/c/Program\ Files/Amazon\ Corretto/*/bin
-    appendPath /cygdrive/c/Program\ Files/PuTTY
-    appendPath /cygdrive/c/WINDOWS/System32/OpenSSH
-fi
