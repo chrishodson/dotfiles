@@ -1,7 +1,6 @@
 # Bash functions for use in .profile and beyond
 # Source this file in your .profile or .bashrc to use these functions
 
-
 # Usage: prependPath <path>
 # Adds <path> to the PATH environment variable if it exists
 prependPath() {
@@ -32,16 +31,24 @@ done
 # Returns 0 if the PATH was changed, 1 if it was not.
 cleansePath() {
     local -a newPath
-    IFS=: 
-    read -ra dirs <<< "$PATH"
+    local IFS_orig="$IFS"
+    IFS=:
+    if [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
+        read -rA dirs <<< "$PATH"
+    else
+        read -ra dirs <<< "$PATH"
+    fi
+    IFS="$IFS_orig"
     for dir in "${dirs[@]}"; do
         dir="$(untilde "$dir")"
-        if [ -d "$dir" ] && ! [[ "${newPath[*]}" =~ (^|:)$dir($|:) ]]; then
+        if [ -d "$dir" ] && ! [[ " ${newPath[*]} " =~ " $dir " ]]; then
             newPath+=("$dir")
         fi
     done
-    if [ "${newPath[*]}" != "$PATH" ]; then
-        PATH="${newPath[*]}"
+    local newPathStr="${newPath[*]}"
+    newPathStr="${newPathStr// /:}"
+    if [ "$newPathStr" != "$PATH" ]; then
+        PATH="$newPathStr"
         return 0
     else
         return 1
