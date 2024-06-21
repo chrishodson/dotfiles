@@ -64,9 +64,10 @@ urldecode() {
 
 # Expand tilde to home directory.  Nothing more.
 untilde() {
+    local path
     case "$1" in
-        "~"*) local path="${HOME}${1#"~"}" ;;
-        *) local path="$1" ;;
+        "~"*) path="${HOME}${1#"~"}" ;;
+        *) path="$1" ;;
     esac
     printf "%s\n" "$path"
 }
