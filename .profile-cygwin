@@ -1,7 +1,9 @@
 if [[ "$(uname -s)" == *CYGWIN* ]]; then
     # settings typically used for cygwin
     appendPath /cygdrive/c/Program\ Files/Docker/Docker/resources/bin/
-    appendPath /cygdrive/c/Program\ Files/Amazon\ Corretto/*/bin
+    if [ -d "/cygdrive/c/Program Files/Amazon Corretto" ]; then
+        find /cygdrive/c/Program\ Files/Amazon\ Corretto/ -maxdepth 2 -type d -name 'bin' -exec appendPath {} \;
+    fi
     appendPath /cygdrive/c/Program\ Files/PuTTY
     appendPath /cygdrive/c/WINDOWS/System32/OpenSSH
 fi
