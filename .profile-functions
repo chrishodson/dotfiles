@@ -33,7 +33,7 @@ cleansePath() {
     local -a newPath
     local IFS_orig="$IFS"
     IFS=:
-    if [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
+    if [ -n "$ZSH_VERSION" ]; then
         read -rA dirs <<< "$PATH"
     else
         read -ra dirs <<< "$PATH"

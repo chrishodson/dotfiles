@@ -12,6 +12,7 @@ unalias cp 2> /dev/null
 which vim       > /dev/null 2>&1 && alias vi=vim
 which colordiff > /dev/null 2>&1 && alias diff=colordiff
 which more      > /dev/null 2>&1 || alias more=less
+which pmset     > /dev/null 2>&1 && alias battery='pmset -g batt'
 
 # If brew exists (MacOS) then let it set up its environment
 which /opt/homebrew/bin/brew > /dev/null 2>&1 && \

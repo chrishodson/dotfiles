@@ -60,7 +60,7 @@ then
     # Export and terminate with no color
     export PS1="${PS1}\[${NC}\]"
 elif [ -n "$ZSH_VERSION" ]; then
-    # Nothing to do for zsh
+    echo No prompt set for zsh
 else
     # Unknown shell
     exit 0
