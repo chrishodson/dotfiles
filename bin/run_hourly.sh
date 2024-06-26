@@ -11,6 +11,7 @@ MINUTE=$(hostname | md5sum | awk '{print $1}' | od -t uL -An -N4 | awk '{print $
 # Parse command-line options
 while getopts "m:" opt; do
   case $opt in
+    # Allow the user to override the minute with -m <minute>
     m) MINUTE=$OPTARG ;;
     \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
   esac
@@ -31,7 +32,7 @@ while true; do
 
   # If current time is past the target minute, set target to the next hour
   if [ "$current_time" -ge "$target_time" ]; then
-    target_time=$(date -d "@$target_time + 1 hour" +%s)
+    target_time=$(date -d "$(date -d @$target_time) + 1 hour" +%s)
   fi
 
   # Calculate sleep time and sleep
@@ -48,4 +49,5 @@ while true; do
     exit $return_code
   fi
   echo "Done at $(date +%H:%M). Sleeping until $(date +%H -d '+1 hour' ):$MINUTE"
+  sleep 1 # sleep for 1 second to avoid running the command twice in the same minute
 done
