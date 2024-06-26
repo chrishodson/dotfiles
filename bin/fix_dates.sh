@@ -14,13 +14,13 @@ reformat_date() {
   case ${#numeric} in
     8)
       if [[ "$fulldate" =~ ^[0-9]{4} ]]; then
-        date="$numeric" # yyyyMMdd, no change needed
+        date=$(echo "$numeric" | sed -r 's/(..)(..)(..)(..)/\2.\3.\4/') # yyyyMMdd to yy.mm.dd
       else
-        date=$(echo "$numeric" | sed -r 's/(..)(..)(....)/\3\1\2/') # mmddyyyy to yyyyMMdd
+        date=$(echo "$numeric" | sed -r 's/(..)(..)(..)(..)/\4.\1.\2/') # mmddyyyy to yy.mm.dd
       fi
       ;;
     6)
-      date=$(echo "$numeric" | sed -r 's/(..)(..)(..)/20\3\1\2/') # mmddyy to yyyyMMdd
+      date=$(echo "$numeric" | sed -r 's/(..)(..)(..)/\3.\1.\2/') # mmddyy to yy.mm.dd
       ;;
     *)
       echo "Unrecognized date format: $fulldate" >&2
