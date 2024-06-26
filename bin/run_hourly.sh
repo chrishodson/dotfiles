@@ -37,7 +37,7 @@ while true; do
 
   # Calculate sleep time and sleep
   sleep_time=$((target_time - current_time))
-  echo "Sleeping for $(( $sleep_time / 60 )) minutes until $(date -d "@$target_time" +'%H:%M')"
+  echo "Sleeping for $(( ($sleep_time + 30) / 60 )) minutes until $(date -d "@$target_time" +'%H:%M')"
   sleep $sleep_time
 
   # run the command
@@ -48,6 +48,6 @@ while true; do
     echo "Command: $CMD"
     exit $return_code
   fi
-  echo "Done at $(date +%H:%M). Sleeping until $(date +%H -d '+1 hour' ):$MINUTE"
+  #echo "Done at $(date +%H:%M). Sleeping until $(date +%H -d '+1 hour' ):$MINUTE"
   sleep 1 # sleep for 1 second to avoid running the command twice in the same minute
 done
