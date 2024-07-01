@@ -20,7 +20,11 @@ reformat_date() {
       fi
       ;;
     6)
-      date=$(echo "$numeric" | sed -r 's/(..)(..)(..)/\3.\1.\2/') # mmddyy to yy.mm.dd
+      if [ $(echo "$numeric" | sed -r 's/(..)/\1'/ ) -gt 12 ]; then
+        date=$(echo "$numeric" | sed -r 's/(..)(..)(..)/\1.\2.\3/') # yymmdd to yy.mm.dd
+      else
+        date=$(echo "$numeric" | sed -r 's/(..)(..)(..)/\3.\1.\2/') # mmddyy to yy.mm.dd
+      fi
       ;;
     *)
       echo "Unrecognized date format: $fulldate" >&2
@@ -48,7 +52,7 @@ process_file() {
   local newname=""
   local file="$1"
   # date extraction
-  local fulldate=$(echo "$file" | grep -oP '\d{2,4}\D*\d{2}\D*\d{2,4}')
+  local fulldate=$(echo "$file" | grep -oP '\d{2,4}\D{0,1}\d{2}\D{0,1}\d{2,4}')
   if [ -z "$fulldate" ]; then
     # No date found in $file, skipping
     return
@@ -105,7 +109,8 @@ if [ -f "$TARGET" ] ; then
   fi
 elif [ -d "$TARGET" ]; then
   # If TARGET is a directory, process each file in the directory
-  find $TARGET -maxdepth 1 ! -name '[0-9]*' -type f | while IFS= read -r file; do
+  find $TARGET -maxdepth 1 ! -name '[0-9]*' \
+            | while IFS= read -r file; do
     newname=$(process_file $(basename "$file") )
     if [ -n "$newname" ]; then
       move_file "$file" "$TARGET/$newname"
