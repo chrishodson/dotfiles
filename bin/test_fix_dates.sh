@@ -39,40 +39,40 @@ teardown() {
 @test "Test mode activation" {
   touch "file_2023-04-01.txt"
   run bash $FIX_DATES -t "file_2023-04-01.txt"
-  assert_output --partial "Would move file_2023-04-01.txt to 20230401_file_2023-04-01.txt"
+  assert_output --partial "Would move file_2023-04-01.txt to 23.04.01_file_2023-04-01.txt"
 }
 
 @test "Date reformatting: yyyyMMdd" {
   result=$(bash $FIX_DATES -c "reformat_date 20230401")
-  [ "$result" = "20230401" ]
+  [ "$result" = "23.04.01" ]
 }
 
 @test "Date reformatting: mmddyyyy" {
   result=$(bash $FIX_DATES -c "reformat_date 04-01-2023")
-  [ "$result" = "20230401" ]
+  [ "$result" = "23.04.01" ]
 }
 
 @test "Date reformatting: mmddyy" {
   result=$(bash $FIX_DATES -c "reformat_date 040123")
-  [ "$result" = "20230401" ]
+  [ "$result" = "23.04.01" ]
 }
 
 @test "Date reformatting: mm dd yy" {
   result=$(bash $FIX_DATES -c "reformat_date '04 02 24'")
-  [ "$result" = "20240402" ]
+  [ "$result" = "24.04.02" ]
 }
 
 @test "File processing" {
   touch "event_2023-04-01.txt"
   bash $FIX_DATES "event_2023-04-01.txt"
-  [ -f "20230401_event_2023-04-01.txt" ]
+  [ -f "23.04.01_event_2023-04-01.txt" ]
 }
 
 @test "Directory processing" {
   mkdir "testdir"
   touch "testdir/event_2023-04-01.txt"
   bash $FIX_DATES  "testdir"
-  [ -f "testdir/20230401_event_2023-04-01.txt" ]
+  [ -f "testdir/23.04.01_event_2023-04-01.txt" ]
 }
 
 @test "Error handling: Invalid date format" {
