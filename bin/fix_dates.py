@@ -1,5 +1,7 @@
 #!/bin/env python3
 import os
+import re
+from operator import sub
 import shutil
 from dateutil import parser
 import argparse
@@ -32,13 +34,15 @@ def process_file(file):
     Extract a date from the filename, reformat it, and return the new filename.
     """
     try:
-        # remove file extension from file and store as filename
-        filename, _ext = os.path.splitext(file)
-        if not filename:  # If the filename is empty after removing extension
-            print(f"No filename found in {file}")
+        # Extract possible date.  Either 6 or 8 digits, with possible breaks in between
+        # break could be any non-digit, or non-letter.
+        # Should handle 2015.03.19 15.03.19 or 03.19.2015
+        possible_date = re.search(r'(\d{2,4}[-_. ]?\d{2}[-_. ]?\d{2,4})', file)
+        if not (possible_date and (-sub(*possible_date.span()) >= 6)):  # If the filename is empty or too short
+            # "No date found in {file}"
             return None
         # Extract date from the filename using dateutil.parser
-        fulldate = parser.parse(filename, fuzzy=True).strftime("%Y-%m-%d")
+        fulldate = parser.parse(possible_date.group(0), fuzzy=True, yearfirst=True).strftime("%Y-%m-%d")
         date = reformat_date(fulldate)
         if date:
             return f"{date}_{file}"
@@ -53,10 +57,9 @@ def process_directory(target, test_mode):
     for file in os.listdir(target):
         if not file[0].isdigit():  # Skip files starting with a number
             full_path = os.path.join(target, file)
-            if os.path.isfile(full_path):
-                newname = process_file(file)
-                if newname:
-                    move_file(full_path, os.path.join(target, newname), test_mode)
+            newname = process_file(file)
+            if newname:
+                move_file(full_path, os.path.join(target, newname), test_mode)
 
 def main():
     parser = argparse.ArgumentParser(description="Fix dates in filenames by moving dates to the beginning.")
