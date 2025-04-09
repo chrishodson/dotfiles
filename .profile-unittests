@@ -2,137 +2,149 @@
 
 . .profile-functions
 
-# Test helper function to assert equality
+# Improved assert_eq function
+# Tracks test results and provides detailed output
+TESTS_PASSED=0
+TESTS_FAILED=0
+
 assert_eq() {
-    if [[ "$1" != "$2" ]]; then
-        printf "FAIL: expected '%s', got '%s'\n" "$2" "$1"
+    local actual="$1"
+    local expected="$2"
+    local description="$3"
+
+    if [[ "$actual" != "$expected" ]]; then
+        printf "FAIL: %s\n" "${description:-Test failed}" >&2
+        printf "  Expected: '%s'\n" "$expected" >&2
+        printf "  Got:      '%s'\n" "$actual" >&2
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+    else
+        printf "PASS: %s\n" "${description:-Test passed}" >&2
+        TESTS_PASSED=$((TESTS_PASSED + 1))
+    fi
+}
+
+# At the end of the script, print a summary of test results
+print_test_summary() {
+    printf "\nTest Summary:\n" >&2
+    printf "  Passed: %d\n" "$TESTS_PASSED" >&2
+    printf "  Failed: %d\n" "$TESTS_FAILED" >&2
+
+    if [[ $TESTS_FAILED -gt 0 ]]; then
         exit 1
     fi
 }
 
+# Call print_test_summary at the end of the script
+trap print_test_summary EXIT
+
 # Test URL decoding with spaces and percent-encoded characters
-assert_eq "$(urldecode "hello%20world")" "hello world"
-assert_eq "$(urldecode "foo%2Bbar")" "foo+bar"
-assert_eq "$(urldecode "baz%3Fqux%3D123")" "baz?qux=123"
+assert_eq "$(urldecode "hello%20world")" "hello world" "URL decoding with spaces"
+assert_eq "$(urldecode "foo%2Bbar")" "foo+bar" "URL decoding with plus sign"
+assert_eq "$(urldecode "baz%3Fqux%3D123")" "baz?qux=123" "URL decoding with question mark and equals sign"
 
 # Test URL decoding with special characters
-assert_eq "$(urldecode "%3C")" "<"
-assert_eq "$(urldecode "%3E")" ">"
-assert_eq "$(urldecode "%22")" "\""
-assert_eq "$(urldecode "%27")" "'"
-assert_eq "$(urldecode "%5C")" "\\"
-assert_eq "$(urldecode "%7C")" "|"
-assert_eq "$(urldecode "%24")" "\$"
-assert_eq "$(urldecode "%60")" "\`"
-assert_eq "$(urldecode "%2F")" "/"
-assert_eq "$(urldecode "%3F")" "?"
-assert_eq "$(urldecode "%2A")" "*"
-assert_eq "$(urldecode "%26")" "&"
-assert_eq "$(urldecode "%25")" "%"
-assert_eq "$(urldecode "%23")" "#"
-assert_eq "$(urldecode "%40")" "@"
-assert_eq "$(urldecode "%21")" "!"
-assert_eq "$(urldecode "%5E")" "^"
-assert_eq "$(urldecode "%28")" "("
-assert_eq "$(urldecode "%29")" ")"
-assert_eq "$(urldecode "%7B")" "{"
-assert_eq "$(urldecode "%7D")" "}"
-assert_eq "$(urldecode "%5B")" "["
-assert_eq "$(urldecode "%5D")" "]"
-assert_eq "$(urldecode "%3D")" "="
-assert_eq "$(urldecode "%2B")" "+"
-assert_eq "$(urldecode "%2D")" "-"
-assert_eq "$(urldecode "%5C")" "\\"
+assert_eq "$(urldecode "%3C")" "<" "URL decoding with less than sign"
+assert_eq "$(urldecode "%3E")" ">" "URL decoding with greater than sign"
+assert_eq "$(urldecode "%22")" "\"" "URL decoding with double quote"
+assert_eq "$(urldecode "%27")" "'" "URL decoding with single quote"
+assert_eq "$(urldecode "%5C")" "\\" "URL decoding with backslash"
+assert_eq "$(urldecode "%7C")" "|" "URL decoding with vertical bar"
+assert_eq "$(urldecode "%24")" "\$" "URL decoding with dollar sign"
+assert_eq "$(urldecode "%60")" "\`" "URL decoding with backtick"
+assert_eq "$(urldecode "%2F")" "/" "URL decoding with forward slash"
+assert_eq "$(urldecode "%3F")" "?" "URL decoding with question mark"
+assert_eq "$(urldecode "%2A")" "*" "URL decoding with asterisk"
+assert_eq "$(urldecode "%26")" "&" "URL decoding with ampersand"
+assert_eq "$(urldecode "%25")" "%" "URL decoding with percent sign"
+assert_eq "$(urldecode "%23")" "#" "URL decoding with hash sign"
+assert_eq "$(urldecode "%40")" "@" "URL decoding with at sign"
+assert_eq "$(urldecode "%21")" "!" "URL decoding with exclamation mark"
+assert_eq "$(urldecode "%5E")" "^" "URL decoding with caret"
+assert_eq "$(urldecode "%28")" "(" "URL decoding with left parenthesis"
+assert_eq "$(urldecode "%29")" ")" "URL decoding with right parenthesis"
+assert_eq "$(urldecode "%7B")" "{" "URL decoding with left curly brace"
+assert_eq "$(urldecode "%7D")" "}" "URL decoding with right curly brace"
+assert_eq "$(urldecode "%5B")" "[" "URL decoding with left square bracket"
+assert_eq "$(urldecode "%5D")" "]" "URL decoding with right square bracket"
+assert_eq "$(urldecode "%3D")" "=" "URL decoding with equals sign"
+assert_eq "$(urldecode "%2B")" "+" "URL decoding with plus sign"
+assert_eq "$(urldecode "%2D")" "-" "URL decoding with minus sign"
+assert_eq "$(urldecode "%5C")" "\\" "URL decoding with backslash"
 
 # Test URL decoding with special characters
-assert_eq "$(urldecode "%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\"
+assert_eq "$(urldecode "%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\" "URL decoding with multiple special characters"
 
 # Test URL decoding with empty string
-assert_eq "$(urldecode "")" ""
+assert_eq "$(urldecode "")" "" "URL decoding with empty string"
 
 # Test URL decoding with non-ASCII characters
-assert_eq "$(urldecode "%C3%A9%C3%A0%C3%A7")" "éàç"
+assert_eq "$(urldecode "%C3%A9%C3%A0%C3%A7")" "éàç" "URL decoding with non-ASCII characters"
 
 # Test URL decoding with special characters in variable name
 foo_bar="%3C%3E%22%27%5C%7C%24%60%2F%3F%2A%26%25%23%40%21%5E%28%29%7B%7D%5B%5D%3D%2B%2D%5C"
-assert_eq "$(urldecode "$foo_bar")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\"
-
-# "urldecode tests passed"
+assert_eq "$(urldecode "$foo_bar")" "<>\"'\\|$\`/?*&%#@!^(){}[]=+-\\" "URL decoding with special characters in variable"
 
 # Test untilde with absolute path
-assert_eq "$(untilde "/etc/passwd")" "/etc/passwd"
+assert_eq "$(untilde "/etc/passwd")" "/etc/passwd" "untilde with absolute path"
 
 # Test untilde with tilde
-assert_eq "$(untilde "~/test.txt")" "${HOME}/test.txt"
+assert_eq "$(untilde "~/test.txt")" "${HOME}/test.txt" "untilde with tilde"
 
 # Test untilde with spaces
-assert_eq "$(untilde "~/foo bar")" "${HOME}/foo bar"
+assert_eq "$(untilde "~/foo bar")" "${HOME}/foo bar" "untilde with spaces"
 
 # Test untilde with special characters
-assert_eq "$(untilde "~/foo bar/baz qux")" "${HOME}/foo bar/baz qux"
+assert_eq "$(untilde "~/foo bar/baz qux")" "${HOME}/foo bar/baz qux" "untilde with special characters"
 
-# "untilde tests passed"
-
-# Test helper function to assert equality
-assert_eq() {
-    if [[ "$1" != "$2" ]]; then
-        printf "FAIL: expected '%s', got '%s'\n" "$2" "$1"
-        PATH="$OLD_PATH"
-        exit 1
-    fi
-}
-
-# Test prependPath with empty path
 OLD_PATH="$PATH"
+# Test prependPath with empty path
 prependPath ""
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "prependPath with empty path"
 
 # Test prependPath with non-existent path
 prependPath "/foo/bar"
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "prependPath with non-existent path"
 
 # Test prependPath with existing path
 prependPath "/usr/bin"
-assert_eq "$PATH" "/usr/bin:$OLD_PATH"
+assert_eq "$PATH" "/usr/bin:$OLD_PATH" "prependPath with existing path"
 
 # Test prependPath with multiple paths
 prependPath "/usr/local/bin" "/usr/local/sbin"
-assert_eq "$PATH" "/usr/local/bin:/usr/local/sbin:/usr/bin:$OLD_PATH"
+assert_eq "$PATH" "/usr/local/bin:/usr/local/sbin:/usr/bin:$OLD_PATH" "prependPath with multiple paths"
 
 PATH="$OLD_PATH"
-# prependPath tests passed
 
 OLD_PATH="$PATH"
 # Test appendPath with empty path
 appendPath ""
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "appendPath with empty path"
 
 # Test appendPath with non-existent path
 appendPath "/foo/bar"
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "appendPath with non-existent path"
 
 # Test appendPath with existing path
 appendPath "/usr/bin"
-assert_eq "$PATH" "$OLD_PATH:/usr/bin"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin" "appendPath with existing path"
 
 # Test appendPath with multiple paths
 appendPath "/usr/local/bin" "/usr/local/sbin"
-assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin" "appendPath with multiple paths"
 
 # Test appendPath with spaces in directory name
 newDir=$(mktemp -p /tmp -d "foo XXX")
 appendPath "$newDir"
-assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin:$newDir"
+assert_eq "$PATH" "$OLD_PATH:/usr/bin:/usr/local/bin:/usr/local/sbin:$newDir" "appendPath with spaces in directory name"
 rmdir "$newDir"
 
 PATH="$OLD_PATH"
-# appendPath tests passed
 
 OLD_PATH="$PATH"
 # Test cleansePath with no duplicate paths
 PATH=/usr/bin:/usr/local/bin:/usr/local/sbin
 cleansePath
-assert_eq "$PATH" /usr/bin:/usr/local/bin:/usr/local/sbin
+assert_eq "$PATH" /usr/bin:/usr/local/bin:/usr/local/sbin "cleansePath with no duplicate paths"
 PATH="$OLD_PATH"
 
 cleansePath
@@ -141,18 +153,17 @@ OLD_PATH="$PATH"
 # Test cleansePath with duplicate paths
 PATH="$OLD_PATH:$OLD_PATH"
 cleansePath
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "cleansePath with duplicate paths"
 
 # Test cleansePath with duplicate paths and spaces
 newDir=$(mktemp -p /tmp -d "foo XXX")
 PATH="$OLD_PATH:$newDir:$newDir"
 cleansePath
-assert_eq "$PATH" "$OLD_PATH:$newDir"
+assert_eq "$PATH" "$OLD_PATH:$newDir" "cleansePath with duplicate paths and spaces"
 
 # Test cleansePath with non-existent paths
 rmdir "$newDir"
 cleansePath
-assert_eq "$PATH" "$OLD_PATH"
+assert_eq "$PATH" "$OLD_PATH" "cleansePath with non-existent paths"
 
 PATH="$OLD_PATH"
-# cleansePath tests passed
