@@ -6,13 +6,25 @@ function add_keys {
       | while read id_file
     do
         if /usr/bin/ssh-add -l \
-            | grep -q "$(ssh-keygen -lf $(untilde $id_file) \
+            | grep -q "$(ssh-keygen -lf $(untilde "$id_file") \
             | awk '{print $2}')";
         then
             printf "Identity skipped: %s (already present)\n" "$id_file"
         else
-            # /usr/bin/ssh-add -qK $(untilde $id_file)  # This need to be OS specific
-            /usr/bin/ssh-add $(untilde $id_file)
+            case "$(uname -s)" in
+                Linux)
+                    /usr/bin/ssh-add $(untilde "$id_file")
+                    ;;
+                Darwin)
+                    /usr/bin/ssh-add -K $(untilde "$id_file")
+                    ;;
+                CYGWIN*|MINGW*|MSYS*)
+                    ssh-add $(untilde "$id_file")
+                    ;;
+                *)
+                    echo "Unsupported OS: $(uname -s)"
+                    ;;
+            esac
         fi
     done
     echo "Done adding keys"
