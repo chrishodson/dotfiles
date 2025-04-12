@@ -26,9 +26,9 @@ proxy # http://localhost:7128/
 
 export BC_ENV_ARGS="$HOME/.extensions.bc"
 [[ ! -f "$BC_ENV_ARGS" ]] && \
-    curl -o "$BC_ENV_ARGS" https://x-bc.sourceforge.net/extensions.bc || {
+    ( curl -o "$BC_ENV_ARGS" https://x-bc.sourceforge.net/extensions.bc || {
         echo "Failed to download BC_ENV_ARGS" >&2
-    }
+    } )
 
 cleansePath
 export PATH
