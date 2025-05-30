@@ -52,7 +52,7 @@ foreach ($path in @($ConfigPath, $TranscodePath, $MediaPath)) {
         try {
             New-Item -Path $path -ItemType Directory -Force | Out-Null
         } catch {
-            Write-Log "Failed to create directory $path: $_" "ERROR"
+            Write-Log "Failed to create directory ${path}: ${_}" "ERROR"
             exit 1
         }
     }
@@ -64,7 +64,7 @@ try {
     docker pull plexinc/pms-docker:latest
     if ($LASTEXITCODE -ne 0) { throw "Docker pull failed" }
 } catch {
-    Write-Log "Failed to pull the latest Plex Docker image: $_" "ERROR"
+    Write-Log "Failed to pull the latest Plex Docker image: ${_}" "ERROR"
     exit 1
 }
 
@@ -76,7 +76,7 @@ if ($plexRunning) {
         docker stop plex
         if ($LASTEXITCODE -ne 0) { throw "Docker stop failed" }
     } catch {
-        Write-Log "Failed to stop Plex container: $_" "ERROR"
+        Write-Log "Failed to stop Plex container: ${_}" "ERROR"
         exit 1
     }
 }
@@ -120,7 +120,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Docker run failed" }
     Write-Log "Plex container started successfully"
 } catch {
-    Write-Log "Failed to start Plex container: $_" "ERROR"
+    Write-Log "Failed to start Plex container: ${_}" "ERROR"
     exit 1
 }
 
