@@ -1,9 +1,30 @@
+#!/bin/bash
+# Cygwin-specific configuration
+
 if [[ "$(uname -s)" == *CYGWIN* ]]; then
-    # settings typically used for cygwin
-    prependPath "/cygdrive/c/Program Files/Amazon/AWSCLIV2/"
-    appendPath /cygdrive/c/Program\ Files/Docker/Docker/resources/bin/
-    appendPath $(find /cygdrive/c/Program\ Files/Amazon\ Corretto/  \
-    	    -maxdepth 2 -type d -name 'bin' )
-    appendPath /cygdrive/c/Program\ Files/PuTTY
-    appendPath /cygdrive/c/WINDOWS/System32/OpenSSH
+    # Source functions needed for path manipulation
+    . ~/.profile-functions
+    
+    # Add common development tools
+    for path in \
+        "/cygdrive/c/Program Files/Amazon/AWSCLIV2" \
+        "/cygdrive/c/Program Files/Docker/Docker/resources/bin" \
+        "/cygdrive/c/Program Files/PuTTY" \
+        "/cygdrive/c/WINDOWS/System32/OpenSSH" \
+        "/cygdrive/d/Program Files/nodejs" \
+        "/cygdrive/c/ProgramData/chocolatey/bin"
+    do
+        if [ -d "$path" ]; then
+            appendPath "$path"
+        fi
+    done
+
+    # Java setup - find all bin directories under Corretto
+    JAVAPATH="/cygdrive/c/Program Files/Amazon Corretto"
+    if [ -d "$JAVAPATH" ]; then
+        for DIR in $(find "$JAVAPATH" -maxdepth 2 -type d -name 'bin')
+        do
+            prependPath "$DIR"
+        done
+    fi
 fi
