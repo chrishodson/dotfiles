@@ -1,15 +1,45 @@
 #!/bin/bash
+set -e  # Exit immediately if a command fails
+
 BINDIR='/usr/local/bin'
 INSTALLDIR='/usr/local/aws-cli'
 
-tmp_dir=$(mktemp -d -t aws-cli-XXXXXX) && \
-   cd $tmp_dir || exit
+# Check for required commands
+for cmd in curl unzip sudo; do
+   command -v $cmd >/dev/null 2>&1 || { echo "Error: $cmd is required but not installed." >&2; exit 1; }
+done
 
-curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -p).zip" -o "awscliv2.zip"
-unzip -q awscliv2.zip && rm -f awscliv2.zip
-#./aws/install -i ~/aws-cli -b ~/bin --update && rm -rf aws
-sudo ./aws/install --bin-dir $BINDIR --install-dir $INSTALLDIR --update && rm -rf aws
-sudo chmod -R go+rX $INSTALLDIR
-aws --version
-cd /tmp
-rmdir ${tmp_dir}
+# Check and store current version if installed
+OLD_VERSION=""
+if command -v aws >/dev/null 2>&1; then
+   OLD_VERSION=$(aws --version 2>&1)
+fi
+
+# Create temp directory
+tmp_dir=$(mktemp -d -t aws-cli-XXXXXX)
+trap 'rm -rf "$tmp_dir"' EXIT  # Clean up temp dir on exit
+
+# Download and install
+cd "$tmp_dir" || { echo "Error: Failed to change to temporary directory." >&2; exit 1; }
+
+if ! curl -s "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -p).zip" -o "awscliv2.zip"; then
+   echo "Error: Download failed" >&2
+   exit 1
+fi
+
+unzip -q awscliv2.zip || { echo "Error: Failed to extract zip file." >&2; exit 1; }
+rm -f awscliv2.zip
+
+if sudo ./aws/install --bin-dir "$BINDIR" --install-dir "$INSTALLDIR" --update; then
+   sudo chmod -R go+rX "$INSTALLDIR"
+   echo "AWS CLI successfully updated:"
+   eif [ -n "$OLD_VERSION" ]; then
+      echo "Previous version: $OLD_VERSION"
+   else
+      echo "Previous version: Not installed"
+   fi
+      echo "New version:      $(aws --version 2>&1)"
+else
+   echo "Error: Installation failed" >&2
+   exit 1
+fi
