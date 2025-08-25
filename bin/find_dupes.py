@@ -277,19 +277,20 @@ def main():
                     json.dump(pruned, cf, ensure_ascii=False)
             except Exception as e:
                 print(f"Warning: failed to write cache file {args.cache_file}: {e}", file=sys.stderr)
-            # final summary to stderr
-            try:
-                logging.info("Summary:")
-                logging.info(f" files scanned: {files_scanned}")
-                logging.info(f" files hashed (this run): {files_hashed}")
-                logging.info(f" cache hits: {cache_hits}")
-                logging.info(f" cache misses: {cache_misses}")
-                logging.info(f" groups inspected: {groups_inspected}")
-                logging.info(f" duplicates found: {duplicates_found}")
-                logging.info(f" skipped files: {skipped_count}")
-                logging.info(f" errors: {errors_count}")
-            except Exception:
-                pass
+
+        # final summary to stderr (always print)
+        try:
+            logging.info("Summary:")
+            logging.info(f" files scanned: {files_scanned}")
+            logging.info(f" files hashed (this run): {files_hashed}")
+            logging.info(f" cache hits: {cache_hits}")
+            logging.info(f" cache misses: {cache_misses}")
+            logging.info(f" groups inspected: {groups_inspected}")
+            logging.info(f" duplicates found: {duplicates_found}")
+            logging.info(f" skipped files: {skipped_count}")
+            logging.info(f" errors: {errors_count}")
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     main()
