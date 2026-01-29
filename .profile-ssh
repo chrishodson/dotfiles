@@ -1,4 +1,4 @@
-export SSH_ENV="$HOME/.ssh/environment/env-${HOSTNAME}"
+export SSH_ENV="$HOME/.ssh/environment/env-$(hostname)"
 
 function add_keys {
     awk '/^[     ]*IdentityFile/ {print $2}' ~/.ssh/config \
