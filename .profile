@@ -20,6 +20,7 @@ for sourcefile in \
 prependPath "$HOME/bin"
 appendPath /usr/local/bin /usr/local/sbin
 appendPath /usr/X11R6/bin /opt/puppetlabs/bin
+appendPath /opt/homebrew/bin
 appendPath "$HOME/.local/bin"
 
 proxy # http://localhost:7128/
