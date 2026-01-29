@@ -1,0 +1,8 @@
+# .shrc - Shell startup script for interactive non-login shells
+# This file is sourced by interactive sh/ksh/dash shells
+# Keep this POSIX-compliant (no bash/zsh-specific features)
+
+# Source aliases if available
+if [ -f "$HOME/.profile-aliases" ]; then
+    . "$HOME/.profile-aliases"
+fi

@@ -18,12 +18,12 @@ prependPath() {
 # Usage: appendPath <path>
 # Adds <path> to the PATH environment variable if it exists
 appendPath() {
-while [ $# -gt 0 ]; do
-    if [ -d "$1" ]; then
-	PATH="$PATH:$1"
-    fi
-    shift
-done
+    while [ $# -gt 0 ]; do
+        if [ -d "$1" ]; then
+            PATH="$PATH:$1"
+        fi
+        shift
+    done
 }
 
 # Usage: cleansePath

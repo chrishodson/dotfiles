@@ -16,7 +16,12 @@ function add_keys {
                     /usr/bin/ssh-add $(untilde "$id_file")
                     ;;
                 Darwin)
-                    /usr/bin/ssh-add -K $(untilde "$id_file")
+                    # Use --apple-use-keychain on newer macOS, fall back to -K
+                    if /usr/bin/ssh-add --help 2>&1 | grep -q -- '--apple-use-keychain'; then
+                        /usr/bin/ssh-add --apple-use-keychain $(untilde "$id_file")
+                    else
+                        /usr/bin/ssh-add -K $(untilde "$id_file")
+                    fi
                     ;;
                 CYGWIN*|MINGW*|MSYS*)
                     ssh-add $(untilde "$id_file")
