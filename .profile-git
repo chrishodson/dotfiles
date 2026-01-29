@@ -4,8 +4,24 @@ if (which git > /dev/null 2>&1); then
   #Find merged branches.  Skip the current branch.  Skip master or main branches.  Remove what's left
   alias gitcleanup='git branch --merged | grep -v "\*" | grep -vE "^\** *(master|main)" | xargs -n 1 git branch -d'
   alias gitlog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+  
   # For dotfiles
   config() {
     /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@"
   }
+  
+  # Check if dotfiles repo exists and is in sync with remote
+  if [ -d "$HOME/.cfg" ]; then
+    # Fetch remote updates quietly
+    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME fetch --quiet 2>/dev/null
+    # Check if local is behind remote
+    local_commit=$(/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME rev-parse HEAD 2>/dev/null)
+    remote_commit=$(/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME rev-parse @{upstream} 2>/dev/null)
+    if [ -n "$local_commit" ] && [ -n "$remote_commit" ] && [ "$local_commit" != "$remote_commit" ]; then
+      echo "Warning: Dotfiles repository is out of sync with remote" >&2
+    fi
+  else
+    echo "Warning: This is an unmanaged home directory (~/.cfg not found)" >&2
+    echo "To manage this home directory with dotfiles, see README.md" >&2
+  fi
 fi

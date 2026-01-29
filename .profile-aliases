@@ -34,3 +34,10 @@ export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoreboth
 export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups
 
 export no_proxy=127.0.0.1,localhost
+
+# Check for config alias conflict
+if alias config &>/dev/null; then
+    echo "Error: 'config' is already defined as an alias:" >&2
+    alias config >&2
+    echo "Remove the alias before loading .profile" >&2
+fi
