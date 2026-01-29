@@ -42,7 +42,7 @@ while true; do
     fi
     
     # Determine charging status
-    if echo "$output" | grep -q 'AC Power'; then
+    if echo "$output" | grep -q "AC Power"; then
         color="\033[0;32m"  # Green for charging
     else
         color="\033[1;36m"  # Light blue (cyan) for discharging
@@ -68,7 +68,7 @@ while true; do
             wait_time=$seconds_per_percent
         fi
     else
-        wait_time=$(( 60 * 1 ))  # Default if unknown
+        wait_time=60  # Default if unknown
     fi
 
     # Print the output with current wall clock time (HH:MM)
@@ -89,7 +89,5 @@ while true; do
         echo -e "${current_time} ${color}Battery: ${percent}% | Time Remaining: ${time_remaining} | ETA: ${eta_time}\033[0m"
     fi
     
-    sleep $wait_time
+    sleep "$wait_time"
 done
-# Note: The script runs indefinitely until stopped.
-# Use Ctrl+C (SIGINT) or send SIGTERM to stop.
