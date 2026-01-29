@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 
-my $length = 8;
+my $length = 16;
 if (@ARGV) {
   $length = $ARGV[0];
 }
